@@ -1,0 +1,295 @@
+pip install  pywhatkit
+pip install pyautogui 
+pip install pynput
+pip install twilio
+pip install opencv-python
+pip install pillow
+pip install geopy
+pip install googlesearch-python
+pip install boto3
+
+
+
+
+import speech_recognition as sr
+import boto3
+import math
+from PIL import Image, ImageDraw
+import subprocess
+import os
+import smtplib
+import time 
+import pywhatkit
+import pyautogui
+from twilio.rest import Client
+import cv2
+from pynput.keyboard import Key, Controller
+import geocoder
+from geopy.geocoders import Nominatim
+keyboard = Controller()
+from PIL import Image, ImageDraw
+from googlesearch import search
+
+
+
+print("Hello, User....")
+print()
+print("Menu List:")
+print()
+print("Enter 0 for chrome ")
+print("Enter 1 for notepad ")
+print("Enter 2 for explorer")
+print("Enter 3 for calculator ")
+print("Enter 4 for Microsoft Store ")
+print("Enter 5 for Windows Camera ")
+print("Enter 6 for Microsoft Edge  ")
+print("Enter 7 for VLC  ")
+print("Enter 8 for Task Manager ")
+print("Enter 9 for Settings ")
+print("Enter 10 for WhatsApp Message ")
+print("Enter 11 for Sending an Email  ")
+print("Enter 12 for Sending a Text Message  ")
+print("Enter 13 for Capture Photo ")
+print("Enter 14 for Photo Crop ")
+print("Enter 15 for Capture Video ")
+print("Enter 16 for Video Crop ")
+print("Enter 17 for Digitally Generated Indian Flag")
+print("Enter 18 for Location ")
+print("Enter 19 for Google Search ")
+print("Enter 20 for Creating an EC2 Instance  ")
+print("Enter 21 for Creating a S3 bucket ")
+print("Enter 22 for Uploading an Object in S3 bucket ")
+print("Enter 23 for Downloading an Object in S3 bucket")
+print("Enter 24 for creating instance having server and docker install")
+
+def s3_bucket_create():
+    bucket = boto3.client('s3')
+
+    bucket.create_bucket(
+    Bucket='jaipurlwintern',
+    ACL='private',
+    CreateBucketConfiguration={
+          'LocationConstraint': 'ap-south-1'}
+)
+
+def s3_bucket_upload():
+    object = boto3.client('s3')
+    object.upload_file(r"pic.jpg",'jaipurlwintern','pics')
+    
+def s3_bucket_download():
+    download_object = boto3.client('s3')
+    download_object.download_file('jaipurlwintern','pics', 'downloaded.jpeg')
+
+
+def ec2_instance_create():
+    myec2 = boto3.client("ec2")
+    response = myec2.run_instances(  
+    ImageId='ami-0ded8326293d3201b', 
+    InstanceType='t2.micro',
+    MaxCount=1,
+    MinCount=1  
+)
+    print(response)
+
+def send_email():
+    try:
+        sender_email = ("your gmail")
+        password = ("passwprd")
+
+        recipient_email = input("Enter recipient's email address: ")
+        subject = input("Enter the subject of the email: ")
+        body = input("Type the content of the email: ")
+
+        smtp_server = smtplib.SMTP("smtp.gmail.com", 587)
+        smtp_server.ehlo()
+        smtp_server.starttls()
+        smtp_server.login(sender_email, password)
+        email_message = f"Subject: {subject}\n\n{body}"
+        smtp_server.sendmail(sender_email, recipient_email, email_message)
+        smtp_server.quit()
+        print("Email sent successfully!")
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+    if __name__ == "__main__":
+        send_email()
+
+def send_whatsapp_message():
+    from pynput.keyboard import Key, Controller
+    keyboard = Controller()
+    try:
+        pywhatkit.sendwhatmsg_instantly(
+            phone_no="your phone number", 
+            message="Hello Linux World",
+            tab_close=True
+        )
+        time.sleep(20)
+        pyautogui.click()
+        time.sleep(5)
+        keyboard.press(Key.enter)
+        keyboard.release(Key.enter)
+        print("Message sent!")
+    except Exception as e:
+        print(str(e))
+
+        
+def send_text_message():
+    client = Client("your twilio access key", "your twilio secret key")
+    client.messages.create(to="your receipient number", 
+                       from_="your twilio number", 
+                       body="Hello!")
+    print("Message sent successfully. SID:")
+
+def click_photo():
+
+   cap=cv2.VideoCapture(0)
+   status ,photo =cap.read()
+   cv2.imwrite("automated.jpg",photo)
+   cv2.imshow("My photo",photo)
+   cv2.waitKey(5000)
+   cv2.destroyAllWindows()
+   cap.release()
+
+def crop_pic():
+   cap=cv2.VideoCapture(0)
+   status ,photo =cap.read()
+   cv2.imwrite("pic.jpg",photo)
+   cv2.imshow("My photo",photo[200:540,200:430])
+   cv2.waitKey(5000)
+   cv2.destroyAllWindows()
+   pic1=cv2.imread("pic.jpg")
+   pic2=cv2.imread("pic2.jpg")
+   pic1[270:540,245:408]=pic2[270:540,245:408]
+   cv2.imshow("My Photo",pic1)
+   cv2.waitKey(5000)
+   cv2.destroyAllWindows()
+   cap.release()
+    
+
+def capture_video():
+    cap=cv2.VideoCapture(0)
+    while True:
+        status ,photo=cap.read()
+        cv2.imshow("My photo",photo)
+        if cv2.waitKey(5)==13:
+            break
+    cv2.destroyAllWindows()
+
+def capture_crop_video():
+    cap=cv2.VideoCapture(0)
+    while True:
+        status ,photo=cap.read()
+        photo[0:200,0:200]=photo[200:400,200:400]
+        cv2.imshow("My photo",photo)
+        if cv2.waitKey(5)==13:
+            break
+    cv2.destroyAllWindows()
+
+    
+def image_1000_1000():
+    width, height = 1000, 1000
+    image = Image.new("RGB", (width, height), (255, 255, 255))
+    draw = ImageDraw.Draw(image)
+    stripe_height = height // 3
+    draw.rectangle([(0, 0), (width, stripe_height)], fill=(255, 153, 51))
+    draw.rectangle([(0, stripe_height), (width, 2 * stripe_height)], fill=(255, 255, 255))
+    draw.rectangle([(0, 2 * stripe_height), (width, height)], fill=(0, 128, 0))
+    chakra_radius = min(width, height) // 8
+    chakra_center = (width // 2, stripe_height + (stripe_height // 2))
+    draw.ellipse(
+    [
+        (chakra_center[0] - chakra_radius, chakra_center[1] - chakra_radius),
+        (chakra_center[0] + chakra_radius, chakra_center[1] + chakra_radius),
+    ],
+    fill=(0, 56, 168),
+    )
+
+    image.save("indian_flag.png")
+    image.show()
+
+def get_coordinates(location_name):
+    geolocator = Nominatim(user_agent="location_finder")
+    location = geolocator.geocode(location_name)
+    if location is None:
+        print(f"Coordinates not found for '{location_name}'.")
+        return None
+    else:
+        latitude = location.latitude
+        longitude = location.longitude
+        print(f"Coordinates for '{location_name}': Latitude = {latitude}, Longitude = {longitude}.")
+        return latitude, longitude
+    location_name = input("enter the city name:")
+
+def top_10_google_searches(query):
+    try:
+        search_results = list(search(query, num=10, stop=10))
+        print("Top 10 Google Searches for '{}':".format(query))
+        for index, result in enumerate(search_results, start=1):
+            print(f"{index}. {result}")
+    except Exception as e:
+        print("Error: ", str(e))
+        
+def ec2_create():
+    myec2 = boto3.client("ec2")
+    response = myec2.run_instances(  
+    ImageId='ami-0765b887d2d147604', 
+    InstanceType='t2.micro',
+    MaxCount=1,
+    MinCount=1  
+)
+    print("Instance created")
+        
+ch = int(input("ENTER NUMBER:"))
+if ch==0:
+    os.system("start chrome")  
+elif ch==1:
+    os.system("notepad")
+elif ch==2:
+    os.system("explorer")
+elif ch==3:
+    os.system("calc")
+elif ch==4:
+    os.system("start ms-windows-store:")
+elif ch==5:
+    os.system("start microsoft.windows.camera:")
+elif ch==6:
+    os.system("start microsoft-edge:")
+elif ch==7:
+    os.system("start vlc")
+elif ch==8:
+    os.system("taskmgr")
+elif ch==9:
+    os.system("start ms-settings:")
+elif ch==10:
+    send_whatsapp_message()
+elif ch==11:
+    send_email()
+elif ch==12:
+    send_text_message()
+elif ch==13:
+    click_photo()
+elif ch==14:
+    crop_pic()
+elif ch==15:
+    capture_video() 
+elif ch==16:
+    capture_crop_video()
+elif ch==17:
+    image_1000_1000()
+elif ch==18:
+    location_name = input("enter the city name:")
+    get_coordinates(location_name)
+elif ch==19:
+    search_query = input("enter the topic to be search: ")
+    top_10_google_searches(search_query)
+elif ch==20:
+    ec2_instance_create()
+elif ch==21:
+    s3_bucket_create()
+elif ch==22:
+    s3_bucket_upload()
+elif ch==23:
+    s3_bucket_download()
+elif ch==24:
+    ec2_create()
